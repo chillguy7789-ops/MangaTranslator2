@@ -1,11 +1,4 @@
-- name: List files
-  run: |
-    echo "Listing root files:"
-    ls -l
-    echo "Listing gradle folder:"
-    ls -l gradle
-    echo "Listing gradle/wrapper folder:"
-    ls -l gradle/wrapper
+
 name: Build MangaTranslator APK
 
 on:
