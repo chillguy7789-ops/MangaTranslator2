@@ -1,0 +1,2 @@
+# MangaTranslator2
+Idk
