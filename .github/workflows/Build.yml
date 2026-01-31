@@ -1,4 +1,4 @@
-.name: Build MangaTranslator APK
+name: Build MangaTranslator APK
 
 on:
   push:
