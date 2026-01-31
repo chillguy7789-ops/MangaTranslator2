@@ -9,10 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      JAVA_OPTS: ""
-      GRADLE_OPTS: ""
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,22 +19,30 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Sanitize Gradle wrapper
+      # 🔥 DELETE BROKEN WRAPPER
+      - name: Remove broken Gradle wrapper
         run: |
-          sed -i 's/\r$//' gradlew
+          rm -f gradlew gradlew.bat
+          rm -rf gradle/wrapper
+
+      # ✅ DOWNLOAD CLEAN GRADLE WRAPPER
+      - name: Download clean Gradle wrapper
+        run: |
+          curl -sL https://services.gradle.org/distributions/gradle-8.4-bin.zip -o gradle.zip
+          unzip -q gradle.zip
+          mv gradle-8.4 gradle-dist
+          gradle-dist/bin/gradle wrapper --gradle-version 8.4
           chmod +x gradlew
 
-      - name: Debug env (PROOF)
-        run: |
-          echo "JAVA_OPTS=$JAVA_OPTS"
-          echo "GRADLE_OPTS=$GRADLE_OPTS"
-
-      - name: Gradle version (must work)
+      # 🧪 PROOF
+      - name: Gradle version
         run: ./gradlew --version
 
+      # 🏗️ BUILD
       - name: Build Debug APK
         run: ./gradlew app:assembleDebug
 
+      # 📦 UPLOAD
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
