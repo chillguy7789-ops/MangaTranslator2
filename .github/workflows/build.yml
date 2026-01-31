@@ -1,8 +1,8 @@
-name: Build MangaTranslator APK (Linux)
+name: Build MangaTranslator APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -10,29 +10,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      # 1️⃣ Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      # 2️⃣ Set up Java 17 (required for modern Android Gradle Plugin)
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      # 🔥 FIX WINDOWS LINE ENDINGS (THIS WAS YOUR MAIN ISSUE)
-      - name: Fix gradlew line endings
+      # 3️⃣ Fix line endings + permissions (VERY IMPORTANT)
+      - name: Prepare Gradle wrapper
         run: |
           sed -i 's/\r$//' gradlew
           chmod +x gradlew
 
-      - name: Verify Gradle wrapper
+      # 4️⃣ Verify Gradle wrapper (this MUST work)
+      - name: Verify Gradle
         run: ./gradlew --version
 
+      # 5️⃣ List tasks (debug safety net)
+      - name: List Gradle tasks
+        run: ./gradlew tasks --all
+
+      # 6️⃣ Build Debug APK
       - name: Build Debug APK
         run: ./gradlew app:assembleDebug
 
-      - name: Upload APK
+      # 7️⃣ Upload APK
+      - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: MangaTranslator-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/*.apk
